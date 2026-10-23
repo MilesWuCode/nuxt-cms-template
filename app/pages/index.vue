@@ -48,7 +48,7 @@ function onSubmit(_event: FormSubmitEvent<Schema>) {
       @submit="onSubmit"
     >
       <template #password-hint>
-        <ULink to="/" class="font-medium text-primary">忘記密碼？</ULink>
+        <ULink to="/forget-password" class="font-medium text-primary">忘記密碼？</ULink>
       </template>
     </UAuthForm>
   </UPageCard>

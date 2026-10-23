@@ -7,6 +7,7 @@ definePageMeta({ layout: 'dashboard' })
 
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
+const ULink = resolveComponent('ULink')
 
 const toast = useToast()
 
@@ -17,12 +18,6 @@ const pageSize = ref(10)
 const pageSizeOptions = [5, 10, 25, 50]
 
 const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' }]
-
-const statusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
-  published: 'success',
-  draft: 'warning',
-  archived: 'neutral',
-}
 
 const sorting = ref<SortingState>([{ id: 'id', desc: false }])
 
@@ -196,7 +191,13 @@ function sortableHeader(label: string) {
 
 const columns: TableColumn<Post>[] = [
   { accessorKey: 'id', header: sortableHeader('#'), enableHiding: false },
-  { accessorKey: 'title', header: sortableHeader('標題'), enableHiding: false },
+  {
+    accessorKey: 'title',
+    header: sortableHeader('標題'),
+    enableHiding: false,
+    cell: ({ row }) =>
+      h(ULink, { to: `/posts/${row.original.id}`, class: 'text-primary' }, () => row.original.title),
+  },
   { accessorKey: 'author', header: sortableHeader('作者') },
   { accessorKey: 'category', header: sortableHeader('分類') },
   {
@@ -206,7 +207,7 @@ const columns: TableColumn<Post>[] = [
       const status = row.original.status
       return h(UBadge, {
         label: postStatusOptions.find((o) => o.value === status)?.label,
-        color: statusColor[status],
+        color: postStatusColor[status],
         variant: 'subtle',
       })
     },
@@ -218,6 +219,13 @@ const columns: TableColumn<Post>[] = [
     enableHiding: false,
     cell: ({ row }) =>
       h('div', { class: 'text-right' }, [
+        h(UButton, {
+          icon: 'i-lucide-eye',
+          color: 'neutral',
+          variant: 'ghost',
+          to: `/posts/${row.original.id}`,
+          'aria-label': '檢視',
+        }),
         h(UButton, {
           icon: 'i-lucide-pencil',
           color: 'neutral',

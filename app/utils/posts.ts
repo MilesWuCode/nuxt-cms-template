@@ -16,6 +16,12 @@ export const postStatusOptions: { label: string; value: PostStatus }[] = [
   { label: '已封存', value: 'archived' },
 ]
 
+export const postStatusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
+  published: 'success',
+  draft: 'warning',
+  archived: 'neutral',
+}
+
 export const categoryOptions = ['新聞', '科技', '生活', '娛樂', '體育']
 
 const authors = ['王小明', '陳美玲', '林志豪', '張雅婷', '李大華']

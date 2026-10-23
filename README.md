@@ -9,6 +9,7 @@
 
 - 乾淨的layout的頁面
   - / : 登入頁 (UAuthForm)
+  - /forget-password : 忘記密碼 (UAuthForm)
 
 - 有左邊目錄的layout的頁面
   - /posts : 表格頁 (UTable,UPagination)
@@ -18,6 +19,7 @@
     - nuxt ui 表單可以使用的元件
   - /posts/1/edit : 編輯資料的表單頁,使用假資料 (UForm,UFormField,UBreadcrumb)
     - nuxt ui 表單可以使用的元件
+  - /posts/1 : 檢視資料頁
   - /profile : 用戶的資料修改表單 (UAvatar,UForm,UFormField)
   - /settings : (UColorModeSelect)
 
