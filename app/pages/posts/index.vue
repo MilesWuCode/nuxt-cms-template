@@ -186,8 +186,8 @@ function sortableHeader(label: string) {
 }
 
 const columns: TableColumn<Post>[] = [
-  { accessorKey: 'id', header: sortableHeader('#') },
-  { accessorKey: 'title', header: sortableHeader('標題') },
+  { accessorKey: 'id', header: sortableHeader('#'), enableHiding: false },
+  { accessorKey: 'title', header: sortableHeader('標題'), enableHiding: false },
   { accessorKey: 'author', header: sortableHeader('作者') },
   { accessorKey: 'category', header: sortableHeader('分類') },
   {
@@ -206,6 +206,7 @@ const columns: TableColumn<Post>[] = [
   { accessorKey: 'createdAt', header: sortableHeader('建立日期') },
   {
     id: 'actions',
+    enableHiding: false,
     cell: ({ row }) =>
       h('div', { class: 'text-right' }, [
         h(UButton, {
@@ -227,6 +228,46 @@ const columns: TableColumn<Post>[] = [
       ]),
   },
 ]
+
+// 欄位顯示（仿 Filament）：enableHiding: false 的欄位不能被隱藏
+const columnLabels: Record<string, string> = {
+  id: '#',
+  title: '標題',
+  author: '作者',
+  category: '分類',
+  status: '狀態',
+  views: '瀏覽數',
+  createdAt: '建立日期',
+}
+
+const columnOptions = columns
+  .filter((column) => 'accessorKey' in column)
+  .map((column) => {
+    const id = String((column as { accessorKey: string }).accessorKey)
+    return { id, label: columnLabels[id] ?? id, toggleable: column.enableHiding !== false }
+  })
+
+const columnsOpen = ref(false)
+const columnVisibility = ref<Record<string, boolean>>({})
+const draftVisibility = reactive<Record<string, boolean>>({})
+
+// 打開時從目前套用的狀態複製一份草稿
+watch(columnsOpen, (open) => {
+  if (!open) return
+  for (const option of columnOptions) {
+    draftVisibility[option.id] = columnVisibility.value[option.id] !== false
+  }
+})
+
+function applyColumns() {
+  columnVisibility.value = { ...draftVisibility }
+  columnsOpen.value = false
+}
+
+function resetColumns() {
+  for (const option of columnOptions) draftVisibility[option.id] = true
+  columnVisibility.value = { ...draftVisibility }
+}
 </script>
 
 <template>
@@ -262,6 +303,37 @@ const columns: TableColumn<Post>[] = [
               @click="filtersOpen = !filtersOpen"
             />
           </UChip>
+
+          <UPopover v-model:open="columnsOpen" :content="{ align: 'end' }">
+            <UButton
+              icon="i-lucide-columns-3"
+              color="neutral"
+              :variant="columnsOpen ? 'soft' : 'outline'"
+              aria-label="欄位顯示"
+            />
+
+            <template #content>
+              <div class="w-64 p-4">
+                <div class="mb-3 flex items-center justify-between">
+                  <span class="font-semibold text-highlighted">欄位</span>
+                  <UButton label="重設" color="error" variant="link" class="p-0" @click="resetColumns" />
+                </div>
+
+                <div class="flex flex-col gap-3">
+                  <UCheckbox
+                    v-for="option in columnOptions"
+                    :key="option.id"
+                    v-model="draftVisibility[option.id]"
+                    :label="option.label"
+                    :disabled="!option.toggleable"
+                    :color="option.toggleable ? 'primary' : 'neutral'"
+                  />
+                </div>
+
+                <UButton label="套用欄位" class="mt-4" @click="applyColumns" />
+              </div>
+            </template>
+          </UPopover>
         </template>
       </UDashboardToolbar>
     </template>
@@ -290,6 +362,7 @@ const columns: TableColumn<Post>[] = [
 
       <UTable
         v-model:sorting="sorting"
+        v-model:column-visibility="columnVisibility"
         :data="pagedPosts"
         :columns="columns"
         :sorting-options="{ manualSorting: true }"
