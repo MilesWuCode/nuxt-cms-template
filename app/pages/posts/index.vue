@@ -402,44 +402,46 @@ function resetColumns() {
       <!-- filter -->
       <UCollapsible v-model:open="filtersOpen" class="-mb-4 shrink-0 sm:-mb-6">
         <template #content>
-          <UCard :ui="{ header: 'flex items-center justify-between' }">
-            <template #header>
-              <span class="font-semibold text-highlighted">篩選條件</span>
-              <UButton
-                label="重設"
-                color="error"
-                variant="link"
-                class="p-0"
-                @click="resetFilters"
-              />
-            </template>
-
-            <div
-              class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-            >
-              <UFormField
-                v-for="field in filterFields"
-                :key="field.key"
-                :label="field.label"
-              >
-                <USelect
-                  v-model="draftFilters[field.key]"
-                  :items="[...field.items]"
-                  class="w-full"
+          <div class="pb-4 sm:pb-6">
+            <UCard :ui="{ header: 'flex items-center justify-between' }">
+              <template #header>
+                <span class="font-semibold text-highlighted">篩選條件</span>
+                <UButton
+                  label="重設"
+                  color="error"
+                  variant="link"
+                  class="p-0"
+                  @click="resetFilters"
                 />
-              </UFormField>
-            </div>
+              </template>
 
-            <template #footer>
-              <UButton label="套用篩選" @click="applyFilters" />
-            </template>
-          </UCard>
+              <div
+                class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+              >
+                <UFormField
+                  v-for="field in filterFields"
+                  :key="field.key"
+                  :label="field.label"
+                >
+                  <USelect
+                    v-model="draftFilters[field.key]"
+                    :items="[...field.items]"
+                    class="w-full"
+                  />
+                </UFormField>
+              </div>
+
+              <template #footer>
+                <UButton label="套用篩選" @click="applyFilters" />
+              </template>
+            </UCard>
+          </div>
         </template>
       </UCollapsible>
 
-      <!-- table-toolbar -->
-      <UDashboardToolbar>
-        <template #left>
+      <!-- data-table-toolbar -->
+      <div class="flex shrink-0 items-center justify-between gap-1.5">
+        <div class="flex items-center gap-1.5">
           <!-- 批次 -->
           <UDropdownMenu
             v-if="selectedPosts.length"
@@ -453,9 +455,9 @@ function resetColumns() {
               variant="outline"
             />
           </UDropdownMenu>
-        </template>
+        </div>
 
-        <template #right>
+        <div class="flex items-center gap-1.5">
           <!-- search-input -->
           <UInput
             v-model="search"
@@ -525,8 +527,8 @@ function resetColumns() {
             variant="outline"
             to="/posts/sorttable"
           />
-        </template>
-      </UDashboardToolbar>
+        </div>
+      </div>
 
       <!-- data-table -->
       <UTable
