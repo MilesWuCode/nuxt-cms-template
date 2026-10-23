@@ -169,6 +169,11 @@ const selectedPosts = computed(() =>
   rows.value.filter((post) => rowSelection.value[post.id]),
 )
 
+// 搜尋或套用篩選後結果已不同，清空勾選避免批次操作到看不到的資料
+watch([search, appliedFilters], () => {
+  rowSelection.value = {}
+})
+
 // 刪除確認（單筆或批次）
 const deleteTargets = ref<Post[]>([])
 const deleteOpen = computed({
