@@ -403,7 +403,7 @@ function resetColumns() {
       <UCollapsible v-model:open="filtersOpen" class="-mb-4 shrink-0 sm:-mb-6">
         <template #content>
           <div class="pb-4 sm:pb-6">
-            <UCard :ui="{ header: 'flex items-center justify-between' }">
+            <UCard :ui="{ header: 'flex items-center justify-between', footer: 'flex items-center justify-end' }">
               <template #header>
                 <span class="font-semibold text-highlighted">篩選條件</span>
                 <UButton
