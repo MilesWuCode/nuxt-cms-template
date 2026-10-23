@@ -37,7 +37,8 @@ const schema = z.object({
 
 export type PostFormState = z.output<typeof schema>
 
-const state = reactive<Partial<PostFormState>>({
+// reactive() 會把 CalendarDate 等 class 型別展開成一般物件型別，這裡轉回原本的表單型別
+const state = reactive({
   title: '',
   slug: '',
   summary: '',
@@ -56,7 +57,7 @@ const state = reactive<Partial<PostFormState>>({
   cover: undefined,
   accessCode: [],
   ...props.initialState,
-})
+}) as Partial<PostFormState>
 
 const tagOptions = ['Nuxt', 'Vue', 'TypeScript', 'Tailwind', 'CMS', 'AI']
 const channelOptions = [

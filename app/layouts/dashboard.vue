@@ -45,6 +45,7 @@ const notificationMenu = computed<NavigationMenuItem[]>(() => [
           tooltip
           popover
         />
+
         <UNavigationMenu
           :collapsed="collapsed"
           :items="sidebarItems[1]"

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
+import type { BreadcrumbItem, DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import type { Column, SortingState } from '@tanstack/vue-table'
 import { h, resolveComponent } from 'vue'
 

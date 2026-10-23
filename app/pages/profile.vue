@@ -59,7 +59,7 @@ const passwordSchema = z
     message: '兩次輸入的密碼不一致',
     path: ['confirm'],
     // 目前密碼還沒填時也要檢查兩次新密碼是否一致
-    when: ({ value }) => !!(value as Partial<PasswordSchema>).confirm,
+    when: ({ value }) => !!(value as { confirm?: string }).confirm,
   })
 
 type PasswordSchema = z.output<typeof passwordSchema>

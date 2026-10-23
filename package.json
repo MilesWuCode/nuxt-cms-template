@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "format": "prettier . --write",
-    "format-import": "prettier --plugin @trivago/prettier-plugin-sort-imports --write 'app/**/*.vue'"
+    "format-import": "prettier --plugin @trivago/prettier-plugin-sort-imports --write 'app/**/*.vue'",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@internationalized/date": "^3.12.4",
