@@ -1,8 +1,19 @@
 <script setup lang="ts">
 import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
+// 使用者假資料
+const user = {
+  name: 'Admin',
+  avatar: { src: 'https://i.pravatar.cc/80?img=12', alt: 'Admin' },
+}
+
+// 參考官方 dashboard 範例：第一組是顯示使用者的標題列
 const userMenuItems: DropdownMenuItem[][] = [
-  [{ label: '個人資料', icon: 'i-lucide-user', to: '/profile' }],
+  [{ type: 'label', label: user.name, avatar: user.avatar }],
+  [
+    { label: '個人資料', icon: 'i-lucide-user', to: '/profile' },
+    { label: '系統設定', icon: 'i-lucide-settings', to: '/settings' },
+  ],
   [{ label: '登出', icon: 'i-lucide-log-out', to: '/' }],
 ]
 
@@ -40,19 +51,10 @@ const notificationMenu = computed<NavigationMenuItem[]>(() => [
       <template #default="{ collapsed }">
         <UNavigationMenu
           :collapsed="collapsed"
-          :items="sidebarItems[0]"
+          :items="sidebarItems"
           orientation="vertical"
           tooltip
           popover
-        />
-
-        <UNavigationMenu
-          :collapsed="collapsed"
-          :items="sidebarItems[1]"
-          orientation="vertical"
-          tooltip
-          popover
-          class="mt-auto"
         />
 
         <UNavigationMenu
@@ -60,6 +62,7 @@ const notificationMenu = computed<NavigationMenuItem[]>(() => [
           :items="notificationMenu"
           orientation="vertical"
           tooltip
+          class="mt-auto"
         >
           <!-- 收合時看不到數字，改在鈴鐺上顯示紅點 -->
           <template #notifications-leading="{ active, ui }">
@@ -74,19 +77,27 @@ const notificationMenu = computed<NavigationMenuItem[]>(() => [
       </template>
 
       <template #footer="{ collapsed }">
+        <!-- 選單寬度跟按鈕一樣寬，收合時固定 w-48 -->
         <UDropdownMenu
           :items="userMenuItems"
-          :content="{ align: 'center' }"
+          :content="{ align: 'center', collisionPadding: 12 }"
+          :ui="{
+            content: collapsed
+              ? 'w-48'
+              : 'w-(--reka-dropdown-menu-trigger-width)',
+          }"
           class="w-full"
         >
           <UButton
-            :avatar="{ src: 'https://i.pravatar.cc/80?img=12' }"
-            :label="collapsed ? undefined : 'Admin'"
+            :avatar="user.avatar"
+            :label="collapsed ? undefined : user.name"
             :trailing-icon="collapsed ? undefined : 'i-lucide-chevrons-up-down'"
             color="neutral"
             variant="ghost"
             block
             :square="collapsed"
+            class="data-[state=open]:bg-elevated"
+            :ui="{ trailingIcon: 'text-dimmed' }"
           />
         </UDropdownMenu>
       </template>
