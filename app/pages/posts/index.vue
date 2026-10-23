@@ -393,9 +393,54 @@ function resetColumns() {
           <UButton icon="i-lucide-plus" label="新增" to="/posts/create" />
         </template>
       </UDashboardNavbar>
+    </template>
 
+    <template #body>
+      <!-- subnav -->
+      <PostSubNav :post-id="1" />
+
+      <!-- filter -->
+      <UCollapsible v-model:open="filtersOpen" class="-mb-4 shrink-0 sm:-mb-6">
+        <template #content>
+          <UCard :ui="{ header: 'flex items-center justify-between' }">
+            <template #header>
+              <span class="font-semibold text-highlighted">篩選條件</span>
+              <UButton
+                label="重設"
+                color="error"
+                variant="link"
+                class="p-0"
+                @click="resetFilters"
+              />
+            </template>
+
+            <div
+              class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+            >
+              <UFormField
+                v-for="field in filterFields"
+                :key="field.key"
+                :label="field.label"
+              >
+                <USelect
+                  v-model="draftFilters[field.key]"
+                  :items="[...field.items]"
+                  class="w-full"
+                />
+              </UFormField>
+            </div>
+
+            <template #footer>
+              <UButton label="套用篩選" @click="applyFilters" />
+            </template>
+          </UCard>
+        </template>
+      </UCollapsible>
+
+      <!-- table-toolbar -->
       <UDashboardToolbar>
         <template #left>
+          <!-- 批次 -->
           <UDropdownMenu
             v-if="selectedPosts.length"
             :items="bulkActions"
@@ -409,12 +454,16 @@ function resetColumns() {
             />
           </UDropdownMenu>
         </template>
+
         <template #right>
+          <!-- search-input -->
           <UInput
             v-model="search"
             icon="i-lucide-search"
             placeholder="搜尋標題..."
           />
+
+          <!-- filter-button -->
           <UChip
             :text="activeFilterCount"
             size="3xl"
@@ -429,6 +478,7 @@ function resetColumns() {
             />
           </UChip>
 
+          <!-- columns-toggle -->
           <UPopover v-model:open="columnsOpen" :content="{ align: 'end' }">
             <UButton
               aria-label="欄位顯示"
@@ -467,6 +517,7 @@ function resetColumns() {
             </template>
           </UPopover>
 
+          <!-- sorttable-button -->
           <UButton
             icon="i-lucide-list-ordered"
             title="排序"
@@ -476,49 +527,8 @@ function resetColumns() {
           />
         </template>
       </UDashboardToolbar>
-    </template>
 
-    <template #body>
-      <!-- 收合時根元素仍佔一個 flex gap，所以用負 margin 抵銷，間距改由內容的 padding 提供 -->
-      <UCollapsible v-model:open="filtersOpen" class="-mb-4 shrink-0 sm:-mb-6">
-        <template #content>
-          <div class="pb-4 sm:pb-6">
-            <UCard :ui="{ header: 'flex items-center justify-between' }">
-              <template #header>
-                <span class="font-semibold text-highlighted">篩選條件</span>
-                <UButton
-                  label="重設"
-                  color="error"
-                  variant="link"
-                  class="p-0"
-                  @click="resetFilters"
-                />
-              </template>
-
-              <div
-                class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
-              >
-                <UFormField
-                  v-for="field in filterFields"
-                  :key="field.key"
-                  :label="field.label"
-                >
-                  <USelect
-                    v-model="draftFilters[field.key]"
-                    :items="[...field.items]"
-                    class="w-full"
-                  />
-                </UFormField>
-              </div>
-
-              <template #footer>
-                <UButton label="套用篩選" @click="applyFilters" />
-              </template>
-            </UCard>
-          </div>
-        </template>
-      </UCollapsible>
-
+      <!-- data-table -->
       <UTable
         v-model:sorting="sorting"
         v-model:column-visibility="columnVisibility"
@@ -533,6 +543,7 @@ function resetColumns() {
         class="shrink-0"
       />
 
+      <!-- data-table-footer -->
       <div
         class="mt-auto grid grid-cols-1 items-center gap-3 border-t border-default pt-4 sm:grid-cols-3"
       >
@@ -555,6 +566,7 @@ function resetColumns() {
         />
       </div>
 
+      <!-- modals -->
       <UModal
         v-model:open="deleteOpen"
         title="刪除文章"
