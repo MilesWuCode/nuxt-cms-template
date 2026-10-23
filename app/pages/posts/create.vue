@@ -5,7 +5,7 @@ definePageMeta({ layout: 'dashboard' })
 
 const breadcrumbItems: BreadcrumbItem[] = [
   { label: '文章列表', to: '/posts' },
-  { label: '新增文章' },
+  { label: '新增' },
 ]
 </script>
 

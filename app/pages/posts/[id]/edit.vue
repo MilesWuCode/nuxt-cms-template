@@ -14,7 +14,8 @@ const post = posts.find((p) => p.id === Number(route.params.id))!
 
 const breadcrumbItems: BreadcrumbItem[] = [
   { label: '文章列表', to: '/posts' },
-  { label: `編輯文章 #${post.id}` },
+  { label: post.title, to: `/posts/${post.id}` },
+  { label: '編輯' },
 ]
 
 // 編輯頁假資料

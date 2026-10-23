@@ -315,7 +315,7 @@ function resetColumns() {
           <UBreadcrumb :items="breadcrumbItems" />
         </template>
         <template #right>
-          <UButton icon="i-lucide-plus" label="新增文章" to="/posts/create" />
+          <UButton icon="i-lucide-plus" label="新增" to="/posts/create" />
         </template>
       </UDashboardNavbar>
 
