@@ -7,10 +7,10 @@
 
 ## 製作目標
 
-- 乾淨的layout
+- 乾淨的layout的頁面
   - / : 登入頁 (UAuthForm)
 
-- 左邊目錄的layout
+- 有左邊目錄的layout的頁面
   - /posts : 表格頁 (UTable,UPagination)
     - 可以按欄位標題排序
     - 刪除鍵
@@ -19,6 +19,7 @@
   - /posts/1/edit : 編輯資料的表單頁,使用假資料 (UForm,UFormField,UBreadcrumb)
     - nuxt ui 表單可以使用的元件
   - /profile : 用戶的資料修改表單 (UAvatar,UForm,UFormField)
+  - /settings : (UColorModeSelect)
 
 - error.vue : 錯誤頁 (UError)
 - [...slug].vue ： 404頁 (UError)

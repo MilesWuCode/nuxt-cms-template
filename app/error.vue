@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { NuxtError } from '#app'
+import { zh_tw } from '@nuxt/ui/locale'
 
 defineProps<{ error: NuxtError }>()
 
@@ -17,7 +18,7 @@ async function goBack() {
 </script>
 
 <template>
-  <UApp>
+  <UApp :locale="zh_tw">
     <UError :error="error" :clear="false">
       <template #links>
         <UButton label="上一頁" icon="i-lucide-arrow-left" size="lg" @click="goBack" />
