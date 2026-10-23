@@ -99,7 +99,9 @@ function save() {
               {{ post.title }}
             </span>
             <UBadge
-              :label="postStatusOptions.find((o) => o.value === post.status)?.label"
+              :label="
+                postStatusOptions.find((o) => o.value === post.status)?.label
+              "
               :color="postStatusColor[post.status]"
               variant="subtle"
             />

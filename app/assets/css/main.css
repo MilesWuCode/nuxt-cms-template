@@ -1,5 +1,5 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme {
   --font-sans: 'Geist', sans-serif;
@@ -11,7 +11,8 @@
   --ui-primary: black;
 }
 
-:root, .light {
+:root,
+.light {
   --ui-bg-muted: var(--ui-color-neutral-100);
   --ui-bg-elevated: var(--ui-color-neutral-100);
   --ui-bg-accented: var(--ui-color-neutral-200);

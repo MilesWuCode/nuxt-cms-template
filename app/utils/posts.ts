@@ -16,7 +16,10 @@ export const postStatusOptions: { label: string; value: PostStatus }[] = [
   { label: '已封存', value: 'archived' },
 ]
 
-export const postStatusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
+export const postStatusColor: Record<
+  PostStatus,
+  'success' | 'warning' | 'neutral'
+> = {
   published: 'success',
   draft: 'warning',
   archived: 'neutral',

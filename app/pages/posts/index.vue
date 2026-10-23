@@ -18,7 +18,10 @@ const page = ref(1)
 const pageSize = ref(10)
 const pageSizeOptions = [5, 10, 25, 50]
 
-const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' },{ label: '列表' }]
+const breadcrumbItems: BreadcrumbItem[] = [
+  { label: '文章列表', to: '/posts' },
+  { label: '列表' },
+]
 
 const sorting = ref<SortingState>([{ id: 'id', desc: false }])
 
@@ -428,10 +431,11 @@ function resetColumns() {
 
           <UPopover v-model:open="columnsOpen" :content="{ align: 'end' }">
             <UButton
-              icon="i-lucide-columns-3"
-              color="neutral"
-              :variant="columnsOpen ? 'soft' : 'outline'"
               aria-label="欄位顯示"
+              color="neutral"
+              title="欄位顯示"
+              icon="i-lucide-columns-3"
+              :variant="columnsOpen ? 'soft' : 'outline'"
             />
 
             <template #content>
@@ -465,7 +469,7 @@ function resetColumns() {
 
           <UButton
             icon="i-lucide-list-ordered"
-            label="排序"
+            title="排序"
             color="neutral"
             variant="outline"
             to="/posts/sorttable"

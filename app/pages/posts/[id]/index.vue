@@ -17,7 +17,9 @@ const breadcrumbItems: BreadcrumbItem[] = [
   { label: '檢視' },
 ]
 
-const statusLabel = postStatusOptions.find((o) => o.value === post.status)?.label
+const statusLabel = postStatusOptions.find(
+  (o) => o.value === post.status,
+)?.label
 
 // 檢視頁假資料
 const detail = {
@@ -81,7 +83,9 @@ const infoRows = [
                 variant="outline"
               />
             </div>
-            <h1 class="text-2xl font-bold text-highlighted">{{ post.title }}</h1>
+            <h1 class="text-2xl font-bold text-highlighted">
+              {{ post.title }}
+            </h1>
             <p class="text-muted">{{ detail.summary }}</p>
             <USeparator />
             <p class="whitespace-pre-line text-default">{{ detail.content }}</p>
@@ -133,14 +137,22 @@ const infoRows = [
             <dl class="flex flex-col gap-3 text-sm">
               <div class="flex justify-between gap-4">
                 <dt class="text-muted">發布管道</dt>
-                <dd class="text-highlighted">{{ detail.channels.join('、') }}</dd>
+                <dd class="text-highlighted">
+                  {{ detail.channels.join('、') }}
+                </dd>
               </div>
               <div class="flex justify-between gap-4">
                 <dt class="text-muted">允許留言</dt>
                 <dd>
                   <UIcon
-                    :name="detail.allowComments ? 'i-lucide-circle-check' : 'i-lucide-circle-x'"
-                    :class="detail.allowComments ? 'text-success' : 'text-error'"
+                    :name="
+                      detail.allowComments
+                        ? 'i-lucide-circle-check'
+                        : 'i-lucide-circle-x'
+                    "
+                    :class="
+                      detail.allowComments ? 'text-success' : 'text-error'
+                    "
                     class="size-5"
                   />
                 </dd>

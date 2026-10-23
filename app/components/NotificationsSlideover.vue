@@ -36,12 +36,7 @@ function markAllAsRead() {
         class="-mx-3 flex w-[calc(100%+1.5rem)] items-start gap-3 rounded-md px-3 py-2.5 text-left hover:bg-elevated/50"
         @click="markAsRead(notification.id)"
       >
-        <UChip
-          color="error"
-          :show="!notification.read"
-          inset
-          class="shrink-0"
-        >
+        <UChip color="error" :show="!notification.read" inset class="shrink-0">
           <UAvatar :icon="notification.icon" size="md" />
         </UChip>
 
