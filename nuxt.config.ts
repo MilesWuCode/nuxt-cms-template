@@ -9,7 +9,17 @@ export default defineNuxtConfig({
 
   vite: {
     optimizeDeps: {
-      include: ['@vue/devtools-core'],
+      include: [
+        '@vue/devtools-core',
+        '@vueuse/integrations/useSortable',
+        'zod',
+      ],
+    },
+  },
+
+  nitro: {
+    compressPublicAssets: {
+      brotli: true,
     },
   },
 })
