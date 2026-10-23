@@ -12,16 +12,10 @@ const toast = useToast()
 
 const rows = ref<Post[]>([...posts])
 const search = ref('')
-const statusFilter = ref<'all' | PostStatus>('all')
 const page = ref(1)
 const pageSize = 10
 
 const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' }]
-
-const statusFilterItems = [
-  { label: '全部狀態', value: 'all' },
-  ...postStatusOptions,
-]
 
 const statusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
   published: 'success',
@@ -31,11 +25,105 @@ const statusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
 
 const sorting = ref<SortingState>([{ id: 'id', desc: false }])
 
+// 進階篩選（仿 Filament）：選完按「套用篩選」才生效
+interface AdvancedFilters {
+  status: 'all' | PostStatus
+  category: string
+  author: string
+  views: 'all' | 'low' | 'mid' | 'high'
+  createdAt: 'all' | '7d' | '30d'
+}
+
+const defaultFilters: AdvancedFilters = {
+  status: 'all',
+  category: 'all',
+  author: 'all',
+  views: 'all',
+  createdAt: 'all',
+}
+
+const filtersOpen = ref(false)
+const draftFilters = reactive<AdvancedFilters>({ ...defaultFilters })
+const appliedFilters = ref<AdvancedFilters>({ ...defaultFilters })
+
+const filterFields = [
+  {
+    key: 'status',
+    label: '狀態',
+    items: [{ label: '全部', value: 'all' }, ...postStatusOptions],
+  },
+  {
+    key: 'category',
+    label: '分類',
+    items: [{ label: '全部', value: 'all' }, ...categoryOptions.map((c) => ({ label: c, value: c }))],
+  },
+  {
+    key: 'author',
+    label: '作者',
+    items: [
+      { label: '全部', value: 'all' },
+      ...[...new Set(posts.map((p) => p.author))].map((a) => ({ label: a, value: a })),
+    ],
+  },
+  {
+    key: 'views',
+    label: '瀏覽數',
+    items: [
+      { label: '全部', value: 'all' },
+      { label: '1,000 以下', value: 'low' },
+      { label: '1,000 – 3,000', value: 'mid' },
+      { label: '3,000 以上', value: 'high' },
+    ],
+  },
+  {
+    key: 'createdAt',
+    label: '建立日期',
+    items: [
+      { label: '全部', value: 'all' },
+      { label: '最近 7 天', value: '7d' },
+      { label: '最近 30 天', value: '30d' },
+    ],
+  },
+] as const
+
+const activeFilterCount = computed(
+  () =>
+    (Object.keys(defaultFilters) as (keyof AdvancedFilters)[]).filter(
+      (key) => appliedFilters.value[key] !== defaultFilters[key],
+    ).length,
+)
+
+function applyFilters() {
+  appliedFilters.value = { ...draftFilters }
+}
+
+function resetFilters() {
+  Object.assign(draftFilters, defaultFilters)
+  applyFilters()
+}
+
+function matchesAdvancedFilters(post: Post) {
+  const f = appliedFilters.value
+  const daysAgo = (Date.now() - new Date(post.createdAt).getTime()) / 86_400_000
+  return (
+    (f.status === 'all' || post.status === f.status) &&
+    (f.category === 'all' || post.category === f.category) &&
+    (f.author === 'all' || post.author === f.author) &&
+    (f.views === 'all' ||
+      (f.views === 'low' && post.views < 1000) ||
+      (f.views === 'mid' && post.views >= 1000 && post.views <= 3000) ||
+      (f.views === 'high' && post.views > 3000)) &&
+    (f.createdAt === 'all' ||
+      (f.createdAt === '7d' && daysAgo <= 7) ||
+      (f.createdAt === '30d' && daysAgo <= 30))
+  )
+}
+
 const filteredPosts = computed(() =>
   rows.value.filter(
     (post) =>
       (!search.value || post.title.includes(search.value)) &&
-      (statusFilter.value === 'all' || post.status === statusFilter.value),
+      matchesAdvancedFilters(post),
   ),
 )
 
@@ -54,7 +142,7 @@ const pagedPosts = computed(() =>
   sortedPosts.value.slice((page.value - 1) * pageSize, page.value * pageSize),
 )
 
-watch([search, statusFilter, sorting], () => {
+watch([search, sorting, appliedFilters], () => {
   page.value = 1
 })
 
@@ -165,16 +253,41 @@ const columns: TableColumn<Post>[] = [
           />
         </template>
         <template #right>
-          <USelect
-            v-model="statusFilter"
-            :items="statusFilterItems"
-            class="w-32"
-          />
+          <UChip :text="activeFilterCount" size="3xl" :color="activeFilterCount ? 'primary' : 'neutral'">
+            <UButton
+              icon="i-lucide-funnel"
+              color="neutral"
+              :variant="filtersOpen ? 'soft' : 'outline'"
+              aria-label="篩選條件"
+              @click="filtersOpen = !filtersOpen"
+            />
+          </UChip>
         </template>
       </UDashboardToolbar>
     </template>
 
     <template #body>
+      <UCollapsible v-model:open="filtersOpen" class="shrink-0">
+        <template #content>
+          <UCard :ui="{ header: 'flex items-center justify-between' }">
+            <template #header>
+              <span class="font-semibold text-highlighted">篩選條件</span>
+              <UButton label="重設" color="error" variant="link" class="p-0" @click="resetFilters" />
+            </template>
+
+            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+              <UFormField v-for="field in filterFields" :key="field.key" :label="field.label">
+                <USelect v-model="draftFilters[field.key]" :items="[...field.items]" class="w-full" />
+              </UFormField>
+            </div>
+
+            <template #footer>
+              <UButton label="套用篩選" @click="applyFilters" />
+            </template>
+          </UCard>
+        </template>
+      </UCollapsible>
+
       <UTable
         v-model:sorting="sorting"
         :data="pagedPosts"
