@@ -21,7 +21,12 @@ async function goBack() {
   <UApp :locale="zh_tw">
     <UError :error="error" :clear="false">
       <template #links>
-        <UButton label="上一頁" icon="i-lucide-arrow-left" size="lg" @click="goBack" />
+        <UButton
+          label="上一頁"
+          icon="i-lucide-arrow-left"
+          size="lg"
+          @click="goBack"
+        />
       </template>
     </UError>
   </UApp>

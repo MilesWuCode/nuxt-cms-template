@@ -14,7 +14,11 @@ definePageMeta({ layout: 'dashboard' })
 
     <template #body>
       <div class="mx-auto w-full max-w-3xl">
-        <UPageCard title="外觀" description="調整後台的顯示方式" variant="subtle">
+        <UPageCard
+          title="外觀"
+          description="調整後台的顯示方式"
+          variant="subtle"
+        >
           <UFormField
             name="colorMode"
             label="外觀模式"

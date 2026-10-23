@@ -28,5 +28,5 @@
   - 二層,使用假資料
 
 - /dashboard : 儀錶板
-  - 按照nuxt ui 範例 放上 6 個不同的 chart (UChart) 
+  - 按照nuxt ui 範例 放上 6 個不同的 chart (UChart)
   - XL寬度最多放4個

@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { FormSubmitEvent } from '@nuxt/ui'
 import type { CalendarDate } from '@internationalized/date'
+import type { FormSubmitEvent } from '@nuxt/ui'
 import * as z from 'zod'
 
 const props = defineProps<{
@@ -14,7 +14,9 @@ const emit = defineEmits<{
 
 const schema = z.object({
   title: z.string('請輸入標題').min(2, '標題至少 2 個字元'),
-  slug: z.string('請輸入網址代稱').regex(/^[a-z0-9-]+$/, '只能包含小寫英文、數字與 -'),
+  slug: z
+    .string('請輸入網址代稱')
+    .regex(/^[a-z0-9-]+$/, '只能包含小寫英文、數字與 -'),
   summary: z.string().max(200, '摘要最多 200 字').optional(),
   content: z.string('請輸入內容').min(10, '內容至少 10 個字元'),
   category: z.string('請選擇分類'),
@@ -66,19 +68,36 @@ const channelOptions = [
 const toast = useToast()
 
 function onSubmit(event: FormSubmitEvent<PostFormState>) {
-  toast.add({ title: '儲存成功', description: event.data.title, color: 'success' })
+  toast.add({
+    title: '儲存成功',
+    description: event.data.title,
+    color: 'success',
+  })
   emit('submit', event.data)
 }
 </script>
 
 <template>
   <UForm :schema="schema" :state="state" class="space-y-6" @submit="onSubmit">
-    <UPageCard title="基本資訊" description="文章標題、網址與內容" variant="subtle">
+    <UPageCard
+      title="基本資訊"
+      description="文章標題、網址與內容"
+      variant="subtle"
+    >
       <UFormField name="title" label="標題" required>
-        <UInput v-model="state.title" placeholder="請輸入文章標題" class="w-full" />
+        <UInput
+          v-model="state.title"
+          placeholder="請輸入文章標題"
+          class="w-full"
+        />
       </UFormField>
 
-      <UFormField name="slug" label="網址代稱" description="會出現在文章網址中" required>
+      <UFormField
+        name="slug"
+        label="網址代稱"
+        description="會出現在文章網址中"
+        required
+      >
         <UInput
           v-model="state.slug"
           placeholder="my-first-post"
@@ -91,8 +110,17 @@ function onSubmit(event: FormSubmitEvent<PostFormState>) {
         </UInput>
       </UFormField>
 
-      <UFormField name="summary" label="摘要" :hint="`${state.summary?.length ?? 0}/200`">
-        <UTextarea v-model="state.summary" :rows="2" autoresize class="w-full" />
+      <UFormField
+        name="summary"
+        label="摘要"
+        :hint="`${state.summary?.length ?? 0}/200`"
+      >
+        <UTextarea
+          v-model="state.summary"
+          :rows="2"
+          autoresize
+          class="w-full"
+        />
       </UFormField>
 
       <UFormField name="content" label="內容" required>
@@ -122,8 +150,16 @@ function onSubmit(event: FormSubmitEvent<PostFormState>) {
         </UFormField>
       </div>
 
-      <UFormField name="keywords" label="SEO 關鍵字 (UInputTags)" description="輸入後按 Enter 新增">
-        <UInputTags v-model="state.keywords" placeholder="新增關鍵字" class="w-full" />
+      <UFormField
+        name="keywords"
+        label="SEO 關鍵字 (UInputTags)"
+        description="輸入後按 Enter 新增"
+      >
+        <UInputTags
+          v-model="state.keywords"
+          placeholder="新增關鍵字"
+          class="w-full"
+        />
       </UFormField>
     </UPageCard>
 
@@ -165,12 +201,20 @@ function onSubmit(event: FormSubmitEvent<PostFormState>) {
 
     <UPageCard title="其他欄位" variant="subtle">
       <div class="grid gap-4 sm:grid-cols-2">
-        <UFormField name="priority" :label="`排序權重 (USlider)：${state.priority}`">
+        <UFormField
+          name="priority"
+          :label="`排序權重 (USlider)：${state.priority}`"
+        >
           <USlider v-model="state.priority" :min="0" :max="100" />
         </UFormField>
 
         <UFormField name="priority" label="排序權重 (UInputNumber)">
-          <UInputNumber v-model="state.priority" :min="0" :max="100" class="w-full" />
+          <UInputNumber
+            v-model="state.priority"
+            :min="0"
+            :max="100"
+            class="w-full"
+          />
         </UFormField>
 
         <UFormField name="rating" label="推薦程度 (UInputRating)">
@@ -202,7 +246,11 @@ function onSubmit(event: FormSubmitEvent<PostFormState>) {
 
     <div class="flex justify-end gap-2">
       <UButton label="取消" color="neutral" variant="subtle" to="/posts" />
-      <UButton type="submit" :label="submitLabel ?? '儲存'" icon="i-lucide-save" />
+      <UButton
+        type="submit"
+        :label="submitLabel ?? '儲存'"
+        icon="i-lucide-save"
+      />
     </div>
   </UForm>
 </template>

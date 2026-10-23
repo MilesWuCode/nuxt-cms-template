@@ -12,9 +12,7 @@ export const sidebarItems: NavigationMenuItem[][] = [
       label: '文章管理',
       icon: 'i-lucide-file-text',
       defaultOpen: true,
-      children: [
-        { label: '文章列表', to: '/posts' },
-      ],
+      children: [{ label: '文章列表', to: '/posts' }],
     },
     {
       label: '分類管理',

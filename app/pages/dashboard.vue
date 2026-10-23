@@ -2,7 +2,18 @@
 definePageMeta({ layout: 'dashboard' })
 
 // 儀表板假資料
-const months = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月']
+const months = [
+  '1月',
+  '2月',
+  '3月',
+  '4月',
+  '5月',
+  '6月',
+  '7月',
+  '8月',
+  '9月',
+  '10月',
+]
 
 const pageViews = months.map((month, i) => ({
   month,
@@ -22,7 +33,15 @@ const categoryPosts = categoryOptions.map((category, i) => ({
   count: [42, 35, 28, 19, 24][i]!,
 }))
 
-const weeklyPosts = ['週一', '週二', '週三', '週四', '週五', '週六', '週日'].map((day, i) => ({
+const weeklyPosts = [
+  '週一',
+  '週二',
+  '週三',
+  '週四',
+  '週五',
+  '週六',
+  '週日',
+].map((day, i) => ({
   day,
   published: [6, 8, 5, 9, 7, 3, 2][i]!,
   draft: [3, 2, 4, 2, 5, 1, 1][i]!,
@@ -96,7 +115,11 @@ const formatNumber = (value: number) => value.toLocaleString('zh-TW')
           />
         </UPageCard>
 
-        <UPageCard title="本週發布量" description="Stacked bar" variant="subtle">
+        <UPageCard
+          title="本週發布量"
+          description="Stacked bar"
+          variant="subtle"
+        >
           <UChart
             type="bar"
             :data="weeklyPosts"
@@ -120,13 +143,19 @@ const formatNumber = (value: number) => value.toLocaleString('zh-TW')
             :height="220"
           >
             <template #center>
-              <span class="text-2xl font-semibold text-highlighted">{{ posts.length }}</span>
+              <span class="text-2xl font-semibold text-highlighted">
+                {{ posts.length }}
+              </span>
               <span class="text-muted">篇文章</span>
             </template>
           </UChart>
         </UPageCard>
 
-        <UPageCard title="新註冊使用者" description="Step line" variant="subtle">
+        <UPageCard
+          title="新註冊使用者"
+          description="Step line"
+          variant="subtle"
+        >
           <UChart
             type="line"
             :data="signups"

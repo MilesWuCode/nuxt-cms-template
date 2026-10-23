@@ -10,9 +10,14 @@ const toast = useToast()
 const profileSchema = z.object({
   avatar: z.string().optional(),
   name: z.string('請輸入姓名').min(2, '姓名至少 2 個字元'),
-  username: z.string('請輸入帳號').regex(/^[a-z0-9_]+$/, '只能包含小寫英文、數字與 _'),
+  username: z
+    .string('請輸入帳號')
+    .regex(/^[a-z0-9_]+$/, '只能包含小寫英文、數字與 _'),
   email: z.email('Email 格式不正確'),
-  phone: z.string().regex(/^09\d{8}$/, '手機號碼格式不正確').or(z.literal('')),
+  phone: z
+    .string()
+    .regex(/^09\d{8}$/, '手機號碼格式不正確')
+    .or(z.literal('')),
   bio: z.string().max(160, '自我介紹最多 160 字').optional(),
 })
 
@@ -36,7 +41,11 @@ function onFileChange(event: Event) {
 }
 
 function onProfileSubmit(event: FormSubmitEvent<ProfileSchema>) {
-  toast.add({ title: '個人資料已更新', description: event.data.name, color: 'success' })
+  toast.add({
+    title: '個人資料已更新',
+    description: event.data.name,
+    color: 'success',
+  })
 }
 
 // 修改密碼
@@ -63,7 +72,11 @@ const password = reactive<Partial<PasswordSchema>>({
 
 function onPasswordSubmit() {
   toast.add({ title: '密碼已更新', color: 'success' })
-  Object.assign(password, { current: undefined, new: undefined, confirm: undefined })
+  Object.assign(password, {
+    current: undefined,
+    new: undefined,
+    confirm: undefined,
+  })
 }
 </script>
 
@@ -109,7 +122,11 @@ function onPasswordSubmit() {
             >
               <div class="flex items-center gap-3">
                 <UAvatar :src="profile.avatar" :alt="profile.name" size="lg" />
-                <UButton label="更換" color="neutral" @click="fileRef?.click()" />
+                <UButton
+                  label="更換"
+                  color="neutral"
+                  @click="fileRef?.click()"
+                />
                 <input
                   ref="fileRef"
                   type="file"
@@ -129,7 +146,11 @@ function onPasswordSubmit() {
               required
               class="flex justify-between gap-4 max-sm:flex-col sm:items-center"
             >
-              <UInput v-model="profile.name" autocomplete="off" class="sm:w-72" />
+              <UInput
+                v-model="profile.name"
+                autocomplete="off"
+                class="sm:w-72"
+              />
             </UFormField>
 
             <USeparator />
@@ -141,7 +162,11 @@ function onPasswordSubmit() {
               required
               class="flex justify-between gap-4 max-sm:flex-col sm:items-center"
             >
-              <UInput v-model="profile.username" autocomplete="off" class="sm:w-72" />
+              <UInput
+                v-model="profile.username"
+                autocomplete="off"
+                class="sm:w-72"
+              />
             </UFormField>
 
             <USeparator />
@@ -153,7 +178,12 @@ function onPasswordSubmit() {
               required
               class="flex justify-between gap-4 max-sm:flex-col sm:items-center"
             >
-              <UInput v-model="profile.email" type="email" autocomplete="off" class="sm:w-72" />
+              <UInput
+                v-model="profile.email"
+                type="email"
+                autocomplete="off"
+                class="sm:w-72"
+              />
             </UFormField>
 
             <USeparator />
@@ -180,12 +210,21 @@ function onPasswordSubmit() {
               description="簡短介紹自己，會顯示在作者頁面"
               :hint="`${profile.bio?.length ?? 0}/160`"
             >
-              <UTextarea v-model="profile.bio" :rows="4" autoresize class="w-full" />
+              <UTextarea
+                v-model="profile.bio"
+                :rows="4"
+                autoresize
+                class="w-full"
+              />
             </UFormField>
           </UPageCard>
         </UForm>
 
-        <UPageCard title="修改密碼" description="變更密碼後需要重新登入" variant="subtle">
+        <UPageCard
+          title="修改密碼"
+          description="變更密碼後需要重新登入"
+          variant="subtle"
+        >
           <UForm
             :schema="passwordSchema"
             :state="password"
@@ -193,7 +232,11 @@ function onPasswordSubmit() {
             @submit="onPasswordSubmit"
           >
             <UFormField name="current" label="目前密碼">
-              <UInput v-model="password.current" type="password" class="w-full" />
+              <UInput
+                v-model="password.current"
+                type="password"
+                class="w-full"
+              />
             </UFormField>
 
             <UFormField name="new" label="新密碼">
@@ -201,7 +244,11 @@ function onPasswordSubmit() {
             </UFormField>
 
             <UFormField name="confirm" label="確認新密碼">
-              <UInput v-model="password.confirm" type="password" class="w-full" />
+              <UInput
+                v-model="password.confirm"
+                type="password"
+                class="w-full"
+              />
             </UFormField>
 
             <UButton type="submit" label="更新密碼" class="w-fit" />

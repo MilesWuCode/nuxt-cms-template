@@ -15,11 +15,20 @@ function goBack() {
 
 <template>
   <UError
-    :error="{ statusCode: 404, statusMessage: '找不到頁面', message: '你要找的頁面不存在或已被移除。' }"
+    :error="{
+      statusCode: 404,
+      statusMessage: '找不到頁面',
+      message: '你要找的頁面不存在或已被移除。',
+    }"
     :clear="false"
   >
     <template #links>
-      <UButton label="上一頁" icon="i-lucide-arrow-left" size="lg" @click="goBack" />
+      <UButton
+        label="上一頁"
+        icon="i-lucide-arrow-left"
+        size="lg"
+        @click="goBack"
+      />
     </template>
   </UError>
 </template>

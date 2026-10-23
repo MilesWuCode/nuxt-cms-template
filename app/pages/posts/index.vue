@@ -16,7 +16,12 @@ const statusFilter = ref<'all' | PostStatus>('all')
 const page = ref(1)
 const pageSize = 10
 
-const statusFilterItems = [{ label: '全部狀態', value: 'all' }, ...postStatusOptions]
+const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' }]
+
+const statusFilterItems = [
+  { label: '全部狀態', value: 'all' },
+  ...postStatusOptions,
+]
 
 const statusColor: Record<PostStatus, 'success' | 'warning' | 'neutral'> = {
   published: 'success',
@@ -66,7 +71,10 @@ function confirmDelete() {
   const target = deleteTarget.value
   if (!target) return
   rows.value = rows.value.filter((post) => post.id !== target.id)
-  page.value = Math.min(page.value, Math.max(1, Math.ceil(filteredPosts.value.length / pageSize)))
+  page.value = Math.min(
+    page.value,
+    Math.max(1, Math.ceil(filteredPosts.value.length / pageSize)),
+  )
   toast.add({ title: '已刪除', description: target.title, color: 'success' })
   deleteTarget.value = undefined
 }
@@ -140,6 +148,9 @@ const columns: TableColumn<Post>[] = [
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
+        <template #title>
+          <UBreadcrumb :items="breadcrumbItems" />
+        </template>
         <template #right>
           <UButton icon="i-lucide-plus" label="新增文章" to="/posts/create" />
         </template>
@@ -147,10 +158,18 @@ const columns: TableColumn<Post>[] = [
 
       <UDashboardToolbar>
         <template #left>
-          <UInput v-model="search" icon="i-lucide-search" placeholder="搜尋標題..." />
+          <UInput
+            v-model="search"
+            icon="i-lucide-search"
+            placeholder="搜尋標題..."
+          />
         </template>
         <template #right>
-          <USelect v-model="statusFilter" :items="statusFilterItems" class="w-32" />
+          <USelect
+            v-model="statusFilter"
+            :items="statusFilterItems"
+            class="w-32"
+          />
         </template>
       </UDashboardToolbar>
     </template>
@@ -164,18 +183,38 @@ const columns: TableColumn<Post>[] = [
         class="shrink-0"
       />
 
-      <div class="mt-auto flex items-center justify-between gap-3 border-t border-default pt-4">
+      <div
+        class="mt-auto flex items-center justify-between gap-3 border-t border-default pt-4"
+      >
         <span class="text-sm text-muted">共 {{ filteredPosts.length }} 筆</span>
-        <UPagination v-model:page="page" :items-per-page="pageSize" :total="filteredPosts.length" />
+        <UPagination
+          v-model:page="page"
+          :items-per-page="pageSize"
+          :total="filteredPosts.length"
+        />
       </div>
 
-      <UModal v-model:open="deleteOpen" title="刪除文章" :ui="{ footer: 'justify-end' }">
+      <UModal
+        v-model:open="deleteOpen"
+        title="刪除文章"
+        :ui="{ footer: 'justify-end' }"
+      >
         <template #body>
           確定要刪除「{{ deleteTarget?.title }}」嗎？此動作無法復原。
         </template>
         <template #footer="{ close }">
-          <UButton label="取消" color="neutral" variant="outline" @click="close" />
-          <UButton label="刪除" color="error" icon="i-lucide-trash" @click="confirmDelete" />
+          <UButton
+            label="取消"
+            color="neutral"
+            variant="outline"
+            @click="close"
+          />
+          <UButton
+            label="刪除"
+            color="error"
+            icon="i-lucide-trash"
+            @click="confirmDelete"
+          />
         </template>
       </UModal>
     </template>
