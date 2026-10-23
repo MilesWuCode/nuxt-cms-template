@@ -13,7 +13,8 @@ const toast = useToast()
 const rows = ref<Post[]>([...posts])
 const search = ref('')
 const page = ref(1)
-const pageSize = 10
+const pageSize = ref(10)
+const pageSizeOptions = [5, 10, 25, 50]
 
 const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' }]
 
@@ -138,11 +139,19 @@ const sortedPosts = computed(() => {
   })
 })
 
-const pagedPosts = computed(() =>
-  sortedPosts.value.slice((page.value - 1) * pageSize, page.value * pageSize),
+// 顯示第 X 到 Y 筆
+const rangeStart = computed(() =>
+  filteredPosts.value.length ? (page.value - 1) * pageSize.value + 1 : 0,
+)
+const rangeEnd = computed(() =>
+  Math.min(page.value * pageSize.value, filteredPosts.value.length),
 )
 
-watch([search, sorting, appliedFilters], () => {
+const pagedPosts = computed(() =>
+  sortedPosts.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value),
+)
+
+watch([search, sorting, appliedFilters, pageSize], () => {
   page.value = 1
 })
 
@@ -161,7 +170,7 @@ function confirmDelete() {
   rows.value = rows.value.filter((post) => post.id !== target.id)
   page.value = Math.min(
     page.value,
-    Math.max(1, Math.ceil(filteredPosts.value.length / pageSize)),
+    Math.max(1, Math.ceil(filteredPosts.value.length / pageSize.value)),
   )
   toast.add({ title: '已刪除', description: target.title, color: 'success' })
   deleteTarget.value = undefined
@@ -370,11 +379,21 @@ function resetColumns() {
       />
 
       <div
-        class="mt-auto flex items-center justify-between gap-3 border-t border-default pt-4"
+        class="mt-auto grid grid-cols-1 items-center gap-3 border-t border-default pt-4 sm:grid-cols-3"
       >
-        <span class="text-sm text-muted">共 {{ filteredPosts.length }} 筆</span>
+        <span class="text-sm text-muted">
+          顯示第 {{ rangeStart }} 到 {{ rangeEnd }} 筆，共 {{ filteredPosts.length }} 筆
+        </span>
+
+        <UFieldGroup class="sm:justify-self-center">
+          <UBadge label="每頁" color="neutral" variant="outline" size="lg" />
+          <USelect v-model="pageSize" :items="pageSizeOptions" class="w-20" />
+        </UFieldGroup>
+
         <UPagination
           v-model:page="page"
+          class="sm:justify-self-end"
+          :sibling-count="1"
           :items-per-page="pageSize"
           :total="filteredPosts.length"
         />
