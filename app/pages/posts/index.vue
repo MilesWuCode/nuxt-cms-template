@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { TableColumn } from '@nuxt/ui'
+import type { DropdownMenuItem, TableColumn } from '@nuxt/ui'
 import type { Column, SortingState } from '@tanstack/vue-table'
 import { h, resolveComponent } from 'vue'
 
@@ -8,6 +8,7 @@ definePageMeta({ layout: 'dashboard' })
 const UBadge = resolveComponent('UBadge')
 const UButton = resolveComponent('UButton')
 const ULink = resolveComponent('ULink')
+const UCheckbox = resolveComponent('UCheckbox')
 
 const toast = useToast()
 
@@ -159,26 +160,77 @@ watch([search, sorting, appliedFilters, pageSize], () => {
   page.value = 1
 })
 
-// 刪除確認
-const deleteTarget = ref<Post>()
+// 勾選（以文章 id 為 key，換頁後勾選仍保留）
+const rowSelection = ref<Record<string, boolean>>({})
+const selectedPosts = computed(() =>
+  rows.value.filter((post) => rowSelection.value[post.id]),
+)
+
+// 刪除確認（單筆或批次）
+const deleteTargets = ref<Post[]>([])
 const deleteOpen = computed({
-  get: () => !!deleteTarget.value,
+  get: () => deleteTargets.value.length > 0,
   set: (value) => {
-    if (!value) deleteTarget.value = undefined
+    if (!value) deleteTargets.value = []
   },
 })
 
 function confirmDelete() {
-  const target = deleteTarget.value
-  if (!target) return
-  rows.value = rows.value.filter((post) => post.id !== target.id)
+  const ids = new Set(deleteTargets.value.map((post) => post.id))
+  if (!ids.size) return
+  rows.value = rows.value.filter((post) => !ids.has(post.id))
+  rowSelection.value = Object.fromEntries(
+    Object.entries(rowSelection.value).filter(([id]) => !ids.has(Number(id))),
+  )
   page.value = Math.min(
     page.value,
     Math.max(1, Math.ceil(filteredPosts.value.length / pageSize.value)),
   )
-  toast.add({ title: '已刪除', description: target.title, color: 'success' })
-  deleteTarget.value = undefined
+  toast.add({
+    title: '已刪除',
+    description:
+      ids.size === 1 ? deleteTargets.value[0]!.title : `共 ${ids.size} 篇文章`,
+    color: 'success',
+  })
+  deleteTargets.value = []
 }
+
+// 批次操作
+function setStatus(status: PostStatus) {
+  const ids = new Set(selectedPosts.value.map((post) => post.id))
+  rows.value = rows.value.map((post) =>
+    ids.has(post.id) ? { ...post, status } : post,
+  )
+  toast.add({
+    title: '已更新狀態',
+    description: `${ids.size} 篇文章設為「${postStatusOptions.find((o) => o.value === status)?.label}」`,
+    color: 'success',
+  })
+  rowSelection.value = {}
+}
+
+const bulkActions = computed<DropdownMenuItem[][]>(() => [
+  [
+    {
+      label: '設定狀態',
+      icon: 'i-lucide-refresh-cw',
+      children: postStatusOptions.map((option) => ({
+        label: option.label,
+        onSelect: () => setStatus(option.value),
+      })),
+    },
+  ],
+  [
+    {
+      label: '刪除所選',
+      icon: 'i-lucide-trash',
+      color: 'error',
+      onSelect: () => {
+        deleteTargets.value = [...selectedPosts.value]
+      },
+    },
+  ],
+])
 
 function sortableHeader(label: string) {
   return ({ column }: { column: Column<Post> }) => {
@@ -199,6 +251,26 @@ function sortableHeader(label: string) {
 }
 
 const columns: TableColumn<Post>[] = [
+  {
+    id: 'select',
+    enableHiding: false,
+    header: ({ table }) =>
+      h(UCheckbox, {
+        modelValue: table.getIsSomePageRowsSelected()
+          ? 'indeterminate'
+          : table.getIsAllPageRowsSelected(),
+        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+          table.toggleAllPageRowsSelected(!!value),
+        'aria-label': '全選本頁',
+      }),
+    cell: ({ row }) =>
+      h(UCheckbox, {
+        modelValue: row.getIsSelected(),
+        'onUpdate:modelValue': (value: boolean | 'indeterminate') =>
+          row.toggleSelected(!!value),
+        'aria-label': '選取',
+      }),
+  },
   { accessorKey: 'id', header: sortableHeader('#'), enableHiding: false },
   {
     accessorKey: 'title',
@@ -252,7 +324,7 @@ const columns: TableColumn<Post>[] = [
           variant: 'ghost',
           'aria-label': '刪除',
           onClick: () => {
-            deleteTarget.value = row.original
+            deleteTargets.value = [row.original]
           },
         }),
       ]),
@@ -321,7 +393,18 @@ function resetColumns() {
 
       <UDashboardToolbar>
         <template #left>
-          <!--  -->
+          <UDropdownMenu
+            v-if="selectedPosts.length"
+            :items="bulkActions"
+            :content="{ align: 'start' }"
+          >
+            <UButton
+              icon="i-lucide-ellipsis-vertical"
+              :label="`批次操作（${selectedPosts.length}）`"
+              color="neutral"
+              variant="outline"
+            />
+          </UDropdownMenu>
         </template>
         <template #right>
           <UInput
@@ -427,7 +510,12 @@ function resetColumns() {
       <UTable
         v-model:sorting="sorting"
         v-model:column-visibility="columnVisibility"
+        v-model:row-selection="rowSelection"
         :data="pagedPosts"
+        :get-row-id="(post: Post) => String(post.id)"
+        :ui="{
+          tr: 'data-[selected=true]:shadow-[inset_2px_0_0_var(--ui-primary)]',
+        }"
         :columns="columns"
         :sorting-options="{ manualSorting: true }"
         class="shrink-0"
@@ -461,7 +549,13 @@ function resetColumns() {
         :ui="{ footer: 'justify-end' }"
       >
         <template #body>
-          確定要刪除「{{ deleteTarget?.title }}」嗎？此動作無法復原。
+          <template v-if="deleteTargets.length === 1">
+            確定要刪除「{{ deleteTargets[0]?.title }}」嗎？此動作無法復原。
+          </template>
+          <template v-else>
+            確定要刪除所選的
+            {{ deleteTargets.length }} 篇文章嗎？此動作無法復原。
+          </template>
         </template>
         <template #footer="{ close }">
           <UButton
