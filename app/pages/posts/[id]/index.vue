@@ -13,7 +13,8 @@ const post = posts.find((p) => p.id === Number(route.params.id))!
 
 const breadcrumbItems: BreadcrumbItem[] = [
   { label: '文章列表', to: '/posts' },
-  { label: post.title },
+  { label: post.title, to: `/posts/${post.id}` },
+  { label: '檢視' },
 ]
 
 const statusLabel = postStatusOptions.find((o) => o.value === post.status)?.label

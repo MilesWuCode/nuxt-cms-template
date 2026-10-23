@@ -18,7 +18,7 @@ const page = ref(1)
 const pageSize = ref(10)
 const pageSizeOptions = [5, 10, 25, 50]
 
-const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' }]
+const breadcrumbItems: BreadcrumbItem[] = [{ label: '文章列表', to: '/posts' },{ label: '列表' }]
 
 const sorting = ref<SortingState>([{ id: 'id', desc: false }])
 
