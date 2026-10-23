@@ -304,13 +304,14 @@ function resetColumns() {
 
       <UDashboardToolbar>
         <template #left>
+          <!--  -->
+        </template>
+        <template #right>
           <UInput
             v-model="search"
             icon="i-lucide-search"
             placeholder="搜尋標題..."
           />
-        </template>
-        <template #right>
           <UChip :text="activeFilterCount" size="3xl" :color="activeFilterCount ? 'primary' : 'neutral'">
             <UButton
               icon="i-lucide-funnel"
