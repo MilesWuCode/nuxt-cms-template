@@ -462,6 +462,14 @@ function resetColumns() {
               </div>
             </template>
           </UPopover>
+
+          <UButton
+            icon="i-lucide-list-ordered"
+            label="排序"
+            color="neutral"
+            variant="outline"
+            to="/posts/sorttable"
+          />
         </template>
       </UDashboardToolbar>
     </template>
