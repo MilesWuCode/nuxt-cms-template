@@ -51,14 +51,20 @@ const filterFields = [
   {
     key: 'category',
     label: '分類',
-    items: [{ label: '全部', value: 'all' }, ...categoryOptions.map((c) => ({ label: c, value: c }))],
+    items: [
+      { label: '全部', value: 'all' },
+      ...categoryOptions.map((c) => ({ label: c, value: c })),
+    ],
   },
   {
     key: 'author',
     label: '作者',
     items: [
       { label: '全部', value: 'all' },
-      ...[...new Set(posts.map((p) => p.author))].map((a) => ({ label: a, value: a })),
+      ...[...new Set(posts.map((p) => p.author))].map((a) => ({
+        label: a,
+        value: a,
+      })),
     ],
   },
   {
@@ -143,7 +149,10 @@ const rangeEnd = computed(() =>
 )
 
 const pagedPosts = computed(() =>
-  sortedPosts.value.slice((page.value - 1) * pageSize.value, page.value * pageSize.value),
+  sortedPosts.value.slice(
+    (page.value - 1) * pageSize.value,
+    page.value * pageSize.value,
+  ),
 )
 
 watch([search, sorting, appliedFilters, pageSize], () => {
@@ -196,7 +205,11 @@ const columns: TableColumn<Post>[] = [
     header: sortableHeader('標題'),
     enableHiding: false,
     cell: ({ row }) =>
-      h(ULink, { to: `/posts/${row.original.id}`, class: 'text-primary' }, () => row.original.title),
+      h(
+        ULink,
+        { to: `/posts/${row.original.id}`, class: 'text-primary' },
+        () => row.original.title,
+      ),
   },
   { accessorKey: 'author', header: sortableHeader('作者') },
   { accessorKey: 'category', header: sortableHeader('分類') },
@@ -261,7 +274,11 @@ const columnOptions = columns
   .filter((column) => 'accessorKey' in column)
   .map((column) => {
     const id = String((column as { accessorKey: string }).accessorKey)
-    return { id, label: columnLabels[id] ?? id, toggleable: column.enableHiding !== false }
+    return {
+      id,
+      label: columnLabels[id] ?? id,
+      toggleable: column.enableHiding !== false,
+    }
   })
 
 const columnsOpen = ref(false)
@@ -312,7 +329,11 @@ function resetColumns() {
             icon="i-lucide-search"
             placeholder="搜尋標題..."
           />
-          <UChip :text="activeFilterCount" size="3xl" :color="activeFilterCount ? 'primary' : 'neutral'">
+          <UChip
+            :text="activeFilterCount"
+            size="3xl"
+            :color="activeFilterCount ? 'primary' : 'neutral'"
+          >
             <UButton
               icon="i-lucide-funnel"
               color="neutral"
@@ -334,7 +355,13 @@ function resetColumns() {
               <div class="w-64 p-4">
                 <div class="mb-3 flex items-center justify-between">
                   <span class="font-semibold text-highlighted">欄位</span>
-                  <UButton label="重設" color="error" variant="link" class="p-0" @click="resetColumns" />
+                  <UButton
+                    label="重設"
+                    color="error"
+                    variant="link"
+                    class="p-0"
+                    @click="resetColumns"
+                  />
                 </div>
 
                 <div class="flex flex-col gap-3">
@@ -357,24 +384,43 @@ function resetColumns() {
     </template>
 
     <template #body>
-      <UCollapsible v-model:open="filtersOpen" class="shrink-0">
+      <!-- 收合時根元素仍佔一個 flex gap，所以用負 margin 抵銷，間距改由內容的 padding 提供 -->
+      <UCollapsible v-model:open="filtersOpen" class="-mb-4 shrink-0 sm:-mb-6">
         <template #content>
-          <UCard :ui="{ header: 'flex items-center justify-between' }">
-            <template #header>
-              <span class="font-semibold text-highlighted">篩選條件</span>
-              <UButton label="重設" color="error" variant="link" class="p-0" @click="resetFilters" />
-            </template>
+          <div class="pb-4 sm:pb-6">
+            <UCard :ui="{ header: 'flex items-center justify-between' }">
+              <template #header>
+                <span class="font-semibold text-highlighted">篩選條件</span>
+                <UButton
+                  label="重設"
+                  color="error"
+                  variant="link"
+                  class="p-0"
+                  @click="resetFilters"
+                />
+              </template>
 
-            <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-              <UFormField v-for="field in filterFields" :key="field.key" :label="field.label">
-                <USelect v-model="draftFilters[field.key]" :items="[...field.items]" class="w-full" />
-              </UFormField>
-            </div>
+              <div
+                class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5"
+              >
+                <UFormField
+                  v-for="field in filterFields"
+                  :key="field.key"
+                  :label="field.label"
+                >
+                  <USelect
+                    v-model="draftFilters[field.key]"
+                    :items="[...field.items]"
+                    class="w-full"
+                  />
+                </UFormField>
+              </div>
 
-            <template #footer>
-              <UButton label="套用篩選" @click="applyFilters" />
-            </template>
-          </UCard>
+              <template #footer>
+                <UButton label="套用篩選" @click="applyFilters" />
+              </template>
+            </UCard>
+          </div>
         </template>
       </UCollapsible>
 
@@ -391,7 +437,8 @@ function resetColumns() {
         class="mt-auto grid grid-cols-1 items-center gap-3 border-t border-default pt-4 sm:grid-cols-3"
       >
         <span class="text-sm text-muted">
-          顯示第 {{ rangeStart }} 到 {{ rangeEnd }} 筆，共 {{ filteredPosts.length }} 筆
+          顯示第 {{ rangeStart }} 到 {{ rangeEnd }} 筆，共
+          {{ filteredPosts.length }} 筆
         </span>
 
         <UFieldGroup class="sm:justify-self-center">
