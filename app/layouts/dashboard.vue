@@ -1,10 +1,30 @@
 <script setup lang="ts">
-import type { DropdownMenuItem } from '@nuxt/ui'
+import type { DropdownMenuItem, NavigationMenuItem } from '@nuxt/ui'
 
 const userMenuItems: DropdownMenuItem[][] = [
   [{ label: '個人資料', icon: 'i-lucide-user', to: '/profile' }],
   [{ label: '登出', icon: 'i-lucide-log-out', to: '/' }],
 ]
+
+// 通知
+const notificationsOpen = ref(false)
+const notificationItems = ref<AppNotification[]>([...notifications])
+const unreadCount = computed(
+  () => notificationItems.value.filter((n) => !n.read).length,
+)
+
+const notificationMenu = computed<NavigationMenuItem[]>(() => [
+  {
+    label: '通知',
+    icon: 'i-lucide-bell',
+    slot: 'notifications' as const,
+    badge: unreadCount.value || undefined,
+    active: notificationsOpen.value,
+    onSelect: () => {
+      notificationsOpen.value = true
+    },
+  },
+])
 </script>
 
 <template>
@@ -33,6 +53,23 @@ const userMenuItems: DropdownMenuItem[][] = [
           popover
           class="mt-auto"
         />
+
+        <UNavigationMenu
+          :collapsed="collapsed"
+          :items="notificationMenu"
+          orientation="vertical"
+          tooltip
+        >
+          <!-- 收合時看不到數字，改在鈴鐺上顯示紅點 -->
+          <template #notifications-leading="{ active, ui }">
+            <UChip :show="collapsed && unreadCount > 0" color="error" inset>
+              <UIcon
+                name="i-lucide-bell"
+                :class="ui.linkLeadingIcon({ active })"
+              />
+            </UChip>
+          </template>
+        </UNavigationMenu>
       </template>
 
       <template #footer="{ collapsed }">
@@ -55,5 +92,10 @@ const userMenuItems: DropdownMenuItem[][] = [
     </UDashboardSidebar>
 
     <slot />
+
+    <NotificationsSlideover
+      v-model:open="notificationsOpen"
+      v-model:items="notificationItems"
+    />
   </UDashboardGroup>
 </template>
