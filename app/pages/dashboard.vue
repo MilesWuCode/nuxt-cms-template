@@ -63,7 +63,7 @@ const formatNumber = (value: number) => value.toLocaleString('zh-TW')
 <template>
   <UDashboardPanel id="dashboard">
     <template #header>
-      <UDashboardNavbar title="儀表板">
+      <UDashboardNavbar title="Dashboard">
         <template #leading>
           <UDashboardSidebarCollapse />
         </template>
